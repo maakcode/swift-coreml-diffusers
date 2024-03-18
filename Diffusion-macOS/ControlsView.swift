@@ -58,6 +58,7 @@ struct ControlsView: View {
     @State private var disclosedSteps = false
     @State private var disclosedPreview = false
     @State private var disclosedSeed = false
+    @State private var disclosedLoop = false
     @State private var disclosedAdvanced = false
 
     // TODO: refactor download with similar code in Loading.swift (iOS)
@@ -78,6 +79,7 @@ struct ControlsView: View {
     @State private var showAdvancedHelp = false
     @State private var positiveTokenCount: Int = 0
     @State private var negativeTokenCount: Int = 0
+    @State private var isLoop: Bool = false
 
     let maxSeed: UInt32 = UInt32.max
     private var textFieldLabelSeed: String { generation.seed < 1 ? "Random Seed" : "Seed" }
@@ -339,7 +341,20 @@ struct ControlsView: View {
                         }
                         .foregroundColor(.secondary)
                     }
-
+                    DisclosureGroup(isExpanded: $disclosedLoop) {
+                        HStack {
+                            Toggle(isOn: $isLoop) {
+                                Text("Loop")
+                            }
+                            Spacer()
+                        }.padding(.leading, 10)
+                    } label: {
+                        HStack {
+                            Label("Loop", systemImage: "infinity").foregroundColor(.secondary)
+                            Spacer()
+                            Text("\(isLoop)")
+                        }.foregroundColor(.secondary)
+                    }
                     if Capabilities.hasANE {
                         Divider()
                         DisclosureGroup(isExpanded: $disclosedAdvanced) {
@@ -414,7 +429,7 @@ struct ControlsView: View {
                     }
             Divider()
             
-            StatusView(pipelineState: $pipelineState)
+            StatusView(isLoop: true, pipelineState: $pipelineState)
         }
         .padding()
         .onAppear {

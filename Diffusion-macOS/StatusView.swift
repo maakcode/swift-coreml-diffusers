@@ -10,6 +10,7 @@ import SwiftUI
 
 struct StatusView: View {
     @EnvironmentObject var generation: GenerationContext
+    let isLoop: Bool
     var pipelineState: Binding<PipelineState>
     
     @State private var showErrorPopover = false
@@ -24,6 +25,9 @@ struct StatusView: View {
                     generation.state = .userCanceled
                 } else {
                     generation.state = .complete(generation.positivePrompt, result.image, result.lastSeed, result.interval)
+                    if isLoop {
+                        submit()
+                    }
                 }
             } catch {
                 generation.state = .failed(error)
@@ -134,6 +138,6 @@ struct StatusView: View {
 
 struct StatusView_Previews: PreviewProvider {
     static var previews: some View {
-        StatusView(pipelineState: .constant(.downloading(0.2)))
+        StatusView(isLoop: false, pipelineState: .constant(.downloading(0.2)))
     }
 }

@@ -56,8 +56,15 @@ class GenerationContext: ObservableObject {
             }
         }
     }
-    @Published var state: GenerationState = .startup
-    
+    @Published var state: GenerationState = .startup {
+        didSet {
+            if case .complete(let prompt, let cgImage, let seed, _) = state, let cgImage, let download = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first {
+                let url = download.appending(component: "\(prompt) \(seed).png", directoryHint: .notDirectory)
+                cgImage.savePNG(path: url)
+            }
+        }
+    }
+
     @Published var positivePrompt = DEFAULT_PROMPT
     @Published var negativePrompt = ""
     
