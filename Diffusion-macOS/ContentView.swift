@@ -33,27 +33,13 @@ struct ShareButtons: View {
         return response == .OK ? savePanel.url : nil
     }
 
-    func savePNG(cgImage: CGImage, path: URL) {
-        let image = NSImage(cgImage: cgImage, size: .zero)
-        let imageRepresentation = NSBitmapImageRep(data: image.tiffRepresentation!)
-        guard let pngData = imageRepresentation?.representation(using: .png, properties: [:]) else {
-            print("Error generating PNG data")
-            return
-        }
-        do {
-            try pngData.write(to: path)
-        } catch {
-            print("Error saving: \(error)")
-        }
-    }
-
     var body: some View {
         let imageView = Image(image, scale: 1, label: Text(name))
         HStack {
             ShareLink(item: imageView, preview: SharePreview(name, image: imageView))
             Button() {
                 if let url = showSavePanel() {
-                    savePNG(cgImage: image, path: url)
+                    image.savePNG(path: url)
                 }
             } label: {
                 Label("Save…", systemImage: "square.and.arrow.down")
